@@ -1,8 +1,8 @@
 <?php
 
-namespace Odnavi\Core\Connection;
+namespace Odnavi\Core\Adapter\Db;
 
-use Odnavi\Core\Contract\Connection;
+use Odnavi\Core\Contract\Db;
 use PDO;
 use PDOStatement;
 use Throwable;
@@ -11,7 +11,7 @@ use Throwable;
  * Адаптер соединения поверх сырого PDO. Позиционные плейсхолдеры `?`,
  * 1-based bindValue — совпадает с тем, что генерирует QueryBuilder.
  */
-final class PdoConnection implements Connection
+final class PdoDb implements Db
 {
     private ?PDOStatement $statement = null;
 

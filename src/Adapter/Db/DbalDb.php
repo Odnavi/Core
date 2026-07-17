@@ -1,18 +1,18 @@
 <?php
 
-namespace Odnavi\Core\Connection;
+namespace Odnavi\Core\Adapter\Db;
 
-use Odnavi\Core\Contract\Connection;
 use Doctrine\DBAL\Connection as DbalDriver;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Statement;
+use Odnavi\Core\Contract\Db;
 use Throwable;
 
 /**
  * Адаптер соединения поверх Doctrine DBAL. Позиционные плейсхолдеры `?`,
  * 1-based bindValue. Требует doctrine/dbal.
  */
-final class DbalConnection implements Connection
+final class DbalDb implements Db
 {
     private Statement $query;
     private string    $lastError = '';

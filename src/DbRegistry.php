@@ -2,28 +2,28 @@
 
 namespace Odnavi\Core;
 
-use Odnavi\Core\Contract\Connection;
-use Odnavi\Core\Service\ConnectionFactory;
+use Odnavi\Core\Contract\Db;
+use Odnavi\Core\Service\DbFactory;
 use RuntimeException;
 
 /**
  * Держит активное соединение, которое используют репозитории и EntityManager.
  * Приложение регистрирует драйвер один раз при инициализации.
  */
-final class ConnectionRegistry
+final class DbRegistry
 {
-    private static ?Connection $connection = null;
+    private static ?Db $db = null;
 
     /**
      * Регистрирует активное соединение. Принимает как готовую реализацию
-     * Connection, так и «сырой» драйвер (PDO, Doctrine DBAL, wpdb) — драйвер
+     * Db, так и «сырой» драйвер (PDO, Doctrine DBAL, wpdb) — драйвер
      * оборачивается в подходящий адаптер автоматически.
      *
-     * @param object $driver Драйвер БД или готовый Connection.
+     * @param object $driver Драйвер БД или готовый Db.
      */
     public static function set(object $driver): void
     {
-        self::$connection = ConnectionFactory::from($driver);
+        self::$db = DbFactory::from($driver);
     }
 
     /**
@@ -31,20 +31,20 @@ final class ConnectionRegistry
      *
      * @throws RuntimeException Если соединение не зарегистрировано.
      */
-    public static function get(): Connection
+    public static function get(): Db
     {
-        if (self::$connection === null) {
+        if (self::$db === null) {
             throw new RuntimeException(
-                'ORM: соединение не зарегистрировано. Вызовите ConnectionRegistry::set() при инициализации.'
+                'ORM: соединение не зарегистрировано. Вызовите DbRegistry::set() при инициализации.'
             );
         }
 
-        return self::$connection;
+        return self::$db;
     }
 
     /** Сбрасывает соединение (например, в тестах). */
     public static function reset(): void
     {
-        self::$connection = null;
+        self::$db = null;
     }
 }

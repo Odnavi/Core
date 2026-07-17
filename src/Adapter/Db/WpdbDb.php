@@ -1,8 +1,8 @@
 <?php
 
-namespace Odnavi\Core\Connection;
+namespace Odnavi\Core\Adapter\Db;
 
-use Odnavi\Core\Contract\Connection;
+use Odnavi\Core\Contract\Db;
 use Throwable;
 use const ARRAY_A;
 
@@ -16,7 +16,7 @@ use const ARRAY_A;
  * Внимание: класс исполняется только в среде WordPress (тип $wpdb намеренно object,
  * чтобы пакет не требовал WP на этапе автозагрузки). Под тестами не покрыт.
  */
-final class WpdbConnection implements Connection
+final class WpdbDb implements Db
 {
     /** Подготовленный (через $wpdb->prepare) SQL для текущего запроса. */
     private string $prepared = '';
