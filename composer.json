@@ -1,0 +1,25 @@
+{
+    "name": "odnavi/core",
+    "description": "Ядро микрофреймворка: рефлексия с кэшем (ReflectionFactory), чтение атрибутов (AttributeReader), утилиты (Date/String/Filter) и трейты.",
+    "type": "library",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Ivan Parfentev"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-reflection": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Odnavi\\Core\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}
