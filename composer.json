@@ -2,7 +2,7 @@
     "name": "odnavi/core",
     "description": "Ядро микрофреймворка: рефлексия с кэшем (ReflectionFactory), чтение атрибутов (AttributeReader), утилиты (Date/String/Filter) и трейты.",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
             "name": "Ivan Parfentev"
