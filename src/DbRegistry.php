@@ -7,44 +7,70 @@ use Odnavi\Core\Service\DbFactory;
 use RuntimeException;
 
 /**
- * Держит активное соединение, которое используют репозитории и EntityManager.
- * Приложение регистрирует драйвер один раз при инициализации.
+ * Держит соединения, которые используют репозитории и EntityManager.
+ *
+ * Активное соединение одно и меняется вместе с приложением (AppContext::switch).
+ * Помимо него регистрируются именованные — базы, общие для всех приложений
+ * (идентичность в `base`). Соединение выбирает репозиторий свойством
+ * `$connection`, поэтому пакет users пишет в base независимо от того, под
+ * каким приложением идёт запрос, а сам пакет о базе ничего не знает.
  */
 final class DbRegistry
 {
     private static ?Db $db = null;
 
+    /** @var array<string, Db> Именованные соединения, не зависящие от приложения. */
+    private static array $named = [];
+
     /**
-     * Регистрирует активное соединение. Принимает как готовую реализацию
-     * Db, так и «сырой» драйвер (PDO, Doctrine DBAL, wpdb) — драйвер
-     * оборачивается в подходящий адаптер автоматически.
+     * Регистрирует соединение. Принимает как готовую реализацию Db, так и
+     * «сырой» драйвер (PDO, Doctrine DBAL, wpdb) — драйвер оборачивается
+     * в подходящий адаптер автоматически.
      *
-     * @param object $driver Драйвер БД или готовый Db.
+     * @param object  $driver Драйвер БД или готовый Db.
+     * @param ?string $name   Имя соединения; null — активное соединение приложения.
      */
-    public static function set(object $driver): void
+    public static function set(object $driver, ?string $name = null): void
     {
-        self::$db = DbFactory::from($driver);
+        $db = DbFactory::from($driver);
+
+        if ($name === null) {
+            self::$db = $db;
+            return;
+        }
+
+        self::$named[$name] = $db;
     }
 
     /**
-     * Возвращает активное соединение.
+     * Возвращает соединение по имени; без имени — активное.
+     *
+     * @param ?string $name Имя именованного соединения.
      *
      * @throws RuntimeException Если соединение не зарегистрировано.
      */
-    public static function get(): Db
+    public static function get(?string $name = null): Db
     {
+        if ($name !== null) {
+            return self::$named[$name] ?? throw new RuntimeException(
+                "Соединение '$name' не зарегистрировано. "
+                . "Вызовите DbRegistry::set(\$driver, '$name') при инициализации."
+            );
+        }
+
         if (self::$db === null) {
             throw new RuntimeException(
-                'ORM: соединение не зарегистрировано. Вызовите DbRegistry::set() при инициализации.'
+                'Соединение не зарегистрировано. Вызовите DbRegistry::set() при инициализации.'
             );
         }
 
         return self::$db;
     }
 
-    /** Сбрасывает соединение (например, в тестах). */
+    /** Сбрасывает все соединения (например, в тестах). */
     public static function reset(): void
     {
-        self::$db = null;
+        self::$db    = null;
+        self::$named = [];
     }
 }

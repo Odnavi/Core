@@ -34,4 +34,15 @@ interface Repository
 
     /** Класс сущности, с которым работает репозиторий. */
     public function getEntityClass(): string;
+
+    /**
+     * Выполняет callback в транзакции на соединении репозитория: коммит при
+     * успехе, откат и проброс при исключении.
+     *
+     * @param callable $callback
+     *
+     * @return mixed Результат callback.
+     * @throws \Throwable
+     */
+    public function transactional(callable $callback): mixed;
 }
